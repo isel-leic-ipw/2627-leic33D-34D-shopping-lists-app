@@ -1,4 +1,6 @@
 import express from 'express';
+import swaggerUi from 'swagger-ui-express';
+import yaml from 'yamljs';
 import * as api from './web/api/shopping-lists-api.mjs';
 
 // WARNING:
@@ -18,8 +20,14 @@ import * as api from './web/api/shopping-lists-api.mjs';
 
 const PORT = 8000;  // Port number for the tests
 
+// Load the OpenAPI specification from the YAML file
+const swaggerDocs = yaml.load('./docs/openapi.yaml');
+
 // Create an Express application
 const app = express(); // Express function returns an app
+
+// Serve the OpenAPI specification and Swagger UI for API documentation
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 // Middleware to parse JSON request bodies
 app.use(express.json());
@@ -54,4 +62,5 @@ app.delete('/api/lists/:id/items/:itemId', api.deleteItem);
 // App listening...
 app.listen(PORT, () => {
   console.log(`Shopping Lists app listening on port ${PORT}!`);
+  console.log(`Swagger UI available at http://localhost:${PORT}/api-docs`);
 });

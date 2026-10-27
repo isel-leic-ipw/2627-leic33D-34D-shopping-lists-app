@@ -1,0 +1,281 @@
+openapi: 3.0.3
+info:
+  title: Shopping Lists API
+  description: API for managing shopping lists and their items.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8000/api
+    description: Local server
+tags:
+  - name: Lists
+  - name: Items
+paths:
+  /lists:
+    get:
+      tags: [Lists]
+      summary: Get all shopping lists
+      responses:
+        '200':
+          description: All shopping lists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  lists:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ShoppingList'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      tags: [Lists]
+      summary: Create shopping list
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShoppingListCreate'
+      responses:
+        '201':
+          description: List created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: List id 3 was added!
+                  list:
+                    $ref: '#/components/schemas/ShoppingList'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /lists/{id}:
+    parameters:
+      - $ref: '#/components/parameters/ListId'
+    get:
+      tags: [Lists]
+      summary: Get a shopping list by id
+      responses:
+        '200':
+          description: The shopping list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShoppingList'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags: [Lists]
+      summary: Update the name of a shopping list
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShoppingListCreate'
+      responses:
+        '200':
+          description: List updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: List with id 3 updated.
+                  list:
+                    $ref: '#/components/schemas/ShoppingList'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags: [Lists]
+      summary: Delete a shopping list
+      responses:
+        '200':
+          description: List deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: List with id 3 deleted.
+                  list:
+                    $ref: '#/components/schemas/ShoppingList'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /lists/{id}/items:
+    parameters:
+      - $ref: '#/components/parameters/ListId'
+    post:
+      tags: [Items]
+      summary: Add item to list
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ItemCreate'
+      responses:
+        '201':
+          description: Item added
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Item id 4 was added to list 3!
+                  item:
+                    $ref: '#/components/schemas/Item'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /lists/{id}/items/{itemId}:
+    parameters:
+      - $ref: '#/components/parameters/ListId'
+      - name: itemId
+        in: path
+        required: true
+        schema:
+          type: integer
+    patch:
+      tags: [Items]
+      summary: Partially update an item
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ItemUpdate'
+      responses:
+        '200':
+          description: Item updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Item with id 2 updated.
+                  item:
+                    $ref: '#/components/schemas/Item'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags: [Items]
+      summary: Remove item
+      responses:
+        '200':
+          description: Item removed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Item with id 2 deleted.
+                  item:
+                    $ref: '#/components/schemas/Item'
+        '404':
+          $ref: '#/components/responses/NotFound'
+components:
+  parameters:
+    ListId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+  responses:
+    BadRequest:
+      description: Invalid parameter
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: List or item not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    InternalServerError:
+      description: Internal server error (e.g. there are no shopping lists)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  schemas:
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+        description:
+          type: string
+    ShoppingListCreate:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          minLength: 1
+    ShoppingList:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Item'
+    ItemCreate:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          minLength: 1
+        quantity:
+          type: integer
+          exclusiveMinimum: true
+          minimum: 0
+          default: 1
+        bought:
+          type: boolean
+          default: false
+    ItemUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        quantity:
+          type: integer
+        bought:
+          type: boolean
+    Item:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        quantity:
+          type: integer
+        bought:
+          type: boolean
+ 
