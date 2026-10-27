@@ -1,16 +1,20 @@
 import express from 'express';
-import * as api from './shopping-lists-api.mjs';
+import * as api from './web/api/shopping-lists-api.mjs';
 
 // WARNING:
 // This is a very simple version of Shopping Lists Web Application.
 // - Lists are in memory (in services);
 // - Without Web API documentation;
 // - There is a partial module organization;
-//    - Missing a well-defined interface between the layered modules;
 //    - Missing data module (currently, services = services + data);
 //    - Missing dependency injection;
 // - Without users and authentication;
-// - Without asynchronous operations.
+// - Without asynchronous operations;
+// - Without persistent storage (no database);
+// - No unit tests;
+// - No integration tests;
+// - No end-to-end tests (only manual tests with browser and Rest Client);
+// - Without improvements with middlewares, error handling, etc.
 
 const PORT = 8000;  // Port number for the tests
 
@@ -48,6 +52,6 @@ app.delete('/api/lists/:id/items/:itemId', api.deleteItem);
 
 
 // App listening...
-app.listen(PORT, () =>
-  console.log(`Shopping Lists app listening on port ${PORT}!`),
-);
+app.listen(PORT, () => {
+  console.log(`Shopping Lists app listening on port ${PORT}!`);
+});

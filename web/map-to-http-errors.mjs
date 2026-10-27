@@ -1,4 +1,4 @@
-import { ERROR_CODES } from './errors.mjs';
+import { ERROR_CODES } from '../commons/errors.mjs';
 
 const HTTP_STATUS_CODES = {
     BAD_REQUEST: 400,

@@ -1,4 +1,4 @@
-import ERRORS from './errors.mjs';
+import ERRORS from '../commons/errors.mjs';
 // This modules represents services + data
 // TODO: separate service module from data module.
 // TODO: define a interface between web api and service. 

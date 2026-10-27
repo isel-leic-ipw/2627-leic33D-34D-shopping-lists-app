@@ -1,6 +1,6 @@
-import * as services from './shopping-lists-services-and-data.mjs';
-import mapToHttpError from './map-to-http-errors.mjs';
-import { InternalError } from './errors.mjs';
+import * as services from '../../services/shopping-lists-services-and-data.mjs';
+import mapToHttpError from '../map-to-http-errors.mjs';
+import { InternalError } from '../../commons/errors.mjs';
 
 // TODO: include a handler to avoid code repetition in all handlers.
 
@@ -10,9 +10,9 @@ export function getLists(req, res){
   const ret = services.getLists();
 
   if (ret.constructor === InternalError){
-    const httpError = mapToHttpError(res, ret);
+    const httpError = mapToHttpError(ret);
     res.status(httpError.status);
-    res.send(httpError.message);
+    res.json(httpError.error);
     return;
   }
 
