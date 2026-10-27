@@ -4,10 +4,25 @@ A web application for creating and managing shopping lists, developed for the AP
 
 ## Features
 
-- Create, edit and delete shopping lists
-- Add, update and remove items from a list
-- Mark items as purchased
-- Share lists with other users
+- Get all shopping lists.
+- Get, create, edit and remove a shopping list.
+- Add, update partially and remove items from a list.
+- Requests and responses must be in JSON format.
+
+## Application Resources
+
+- `/api/lists`
+    - GET (get all shopping lists)
+    - POST (create a shopping list)
+- `/api/lists/:id`
+    - GET (get a specific shopping list)
+    - PUT (edit a shopping list)
+    - DELETE (remove a shopping list)
+- `/api/lists/:id/items`
+    - POST (create an item in a shopping list)
+- `/api/lists/:id/items/:itemId`
+    - DELETE (remove an item from a shopping list)
+    - PATCH (partial update of an item in a shopping list)
 
 ## Getting Started
 
@@ -30,7 +45,7 @@ npm install
 npm run start
 ```
 
-The application will be available at `http://localhost:3000`.
+The application will be available at `http://localhost:8000`.
 
 ## License
 
