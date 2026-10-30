@@ -4,7 +4,8 @@ export const ERROR_CODES = {
     LIST_NOT_FOUND_CODE: 3,
     ITEM_NOT_FOUND_CODE: 4,
     INVALID_API_TOKEN_CODE: 5,
-    AUTHENTICATION_REQUIRED_CODE: 6
+    AUTHENTICATION_REQUIRED_CODE: 6,
+    USER_ALREADY_EXISTS_CODE: 7
 };
 
 export function InternalError(code, message, description) {
@@ -43,5 +44,10 @@ export default {
         ERROR_CODES.AUTHENTICATION_REQUIRED_CODE,
         'Authentication required',
         description || 'You must be authenticated to access this resource.'
+    ),
+    USER_ALREADY_EXISTS: (username) => new InternalError(
+        ERROR_CODES.USER_ALREADY_EXISTS_CODE,
+        `User ${username} already exists`,
+        'A user with the specified username already exists in the system.'
     )
 };

@@ -15,6 +15,7 @@ function HttpErrorResponse(status, message, description) {
 export default function mapToHttpError(error) {
     switch (error.code) {
         case ERROR_CODES.INVALID_PARAMETER_CODE:
+        case ERROR_CODES.USER_ALREADY_EXISTS_CODE:
             return new HttpErrorResponse(HTTP_STATUS_CODES.BAD_REQUEST, error.message, error.description);
         case ERROR_CODES.LISTS_NOT_FOUND_CODE:
             return new HttpErrorResponse(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR, error.message, error.description);

@@ -1,13 +1,32 @@
+@TOKEN_ALICE=75ea9010-65e4-4fa8-b13c-7c0348b16e12
+@TOKEN={{TOKEN_ALICE}}
+
 ### ------- Testing Lists -------
+
+### Get all shopping lists without authorization header (should return 401 Unauthorized)
+GET /api/lists HTTP/1.1
+Host: localhost:8000
+
+### Get all shopping lists with invalid token (should return 401 Unauthorized)
+GET /api/lists HTTP/1.1
+Host: localhost:8000
+Authorization: Bearer invalid_token
+
+### Get all shopping lists without a valid token (should return 401 Unauthorized)
+GET /api/lists HTTP/1.1
+Host: localhost:8000
+Authorization: {{TOKEN}}
 
 ### Get an invalid shopping list by ID
 GET /api/lists/999 HTTP/1.1
 Host: localhost:8000
+Authorization: Bearer {{TOKEN}}
 
 ### Create a list with missing name
 POST /api/lists HTTP/1.1
 Host: localhost:8000
 Content-Type: application/json  
+Authorization: Bearer {{TOKEN}}
 
 {
     "nome": "New Shopping List"
@@ -16,7 +35,8 @@ Content-Type: application/json
 ### Create a list with empty name
 POST /api/lists HTTP/1.1
 Host: localhost:8000
-Content-Type: application/json  
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}} 
 
 {
     "name": "   "
@@ -24,13 +44,15 @@ Content-Type: application/json
 
 ### Create a list with missing Content-Type header
 POST /api/lists HTTP/1.1
-Host: localhost:8000 
+Host: localhost:8000
+Authorization: Bearer {{TOKEN}}
 
 
 ### Update a shopping list with invalid ID
 PUT /api/lists/999 HTTP/1.1
 Host: localhost:8000
-Content-Type: application/json 
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
 
 {
   "name": "Shopping for Saturday dinner"
@@ -39,7 +61,8 @@ Content-Type: application/json
 ### Update a shopping list with missing name
 PUT /api/lists/2 HTTP/1.1
 Host: localhost:8000
-Content-Type: application/json 
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
 
 {
 }
@@ -47,18 +70,21 @@ Content-Type: application/json
 ### Update a shopping list missing Content-Type header
 PUT /api/lists/2 HTTP/1.1
 Host: localhost:8000
+Authorization: Bearer {{TOKEN}}
 
 
 ### Delete a shopping list with invalid ID
 DELETE /api/lists/999 HTTP/1.1
 Host: localhost:8000
+Authorization: Bearer {{TOKEN}}
 
 ### ------- Testing Items ------- 
 
 ### Create an item in a invalid shopping list
 POST /api/lists/999/items HTTP/1.1
 Host: localhost:8000
-Content-Type: application/json  
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
 
 {
   "name": "Pasta",
@@ -70,6 +96,7 @@ Content-Type: application/json
 POST /api/lists/2/items HTTP/1.1
 Host: localhost:8000
 Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
 
 {
   "name": "Pasta",
@@ -80,7 +107,8 @@ Content-Type: application/json
 ### Create an item in a specific shopping list with missing name
 POST /api/lists/2/items HTTP/1.1
 Host: localhost:8000
-Content-Type: application/json  
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
 
 {
 }
@@ -88,15 +116,18 @@ Content-Type: application/json
 ### Delete an item in an specific shopping list with invalid list ID
 DELETE /api/lists/999/items/1 HTTP/1.1
 Host: localhost:8000
+Authorization: Bearer {{TOKEN}}
 
 ### Delete an item in a specific (valid) shopping list with invalid item ID
 DELETE /api/lists/1/items/999 HTTP/1.1
 Host: localhost:8000
+Authorization: Bearer {{TOKEN}}
 
 ### Update an item in a specific shopping list with invalid list ID (and also item ID)
 PATCH /api/lists/999/items/1 HTTP/1.1
 Host: localhost:8000
-Content-Type: application/json  
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
 
 {
   "bought": false
@@ -105,9 +136,55 @@ Content-Type: application/json
 ### Update an item in a specific shopping list with invalid item ID
 PATCH /api/lists/1/items/999 HTTP/1.1
 Host: localhost:8000
-Content-Type: application/json  
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
 
 {
   "bought": false
 }
+
+### Update an item in a specific shopping list with invalid quantity
+PATCH /api/lists/1/items/1 HTTP/1.1
+Host: localhost:8000
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "quantity": -1
+}
+
+### Update an item in a specific shopping list with invalid bought status
+PATCH /api/lists/1/items/1 HTTP/1.1
+Host: localhost:8000
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "bought": "yes"
+}
+
+### Update an item in a specific shopping list with ivalid name
+PATCH /api/lists/1/items/1 HTTP/1.1
+Host: localhost:8000
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "name": "   "
+}
+
+### Update an item in a specific shopping list with missing Content-Type header
+PATCH /api/lists/1/items/1 HTTP/1.1
+Host: localhost:8000
+Authorization: Bearer {{TOKEN}}
+
+{
+  "bought": false
+}
+
+### Update an item in a specific shopping list with missing body
+PATCH /api/lists/1/items/1 HTTP/1.1
+Host: localhost:8000
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
 

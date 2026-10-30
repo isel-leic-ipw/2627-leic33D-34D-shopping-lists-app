@@ -1,0 +1,124 @@
+#@TOKEN=write-the-john-token-here
+@TOKEN=8d82917a-14cc-4a14-a250-f78dc2706818
+
+### Create an user
+POST /api/users HTTP/1.1
+Host: localhost:8000
+Content-Type: application/json  
+
+{
+  "username": "john",
+  "password": "password123"
+}
+
+#############################################################################
+### Testing the management of shopping lists and items for the user "john": #
+#############################################################################
+
+### Get all shopping lists from John (should be empty)
+GET /api/lists HTTP/1.1
+Host: localhost:8000
+Authorization: Bearer {{TOKEN}}
+
+### GET a specific shopping list by ID from John (should return 404 Not Found)
+GET /api/lists/1 HTTP/1.1
+Host: localhost:8000
+Authorization: Bearer {{TOKEN}}
+
+### Create a new shopping list for John
+POST /api/lists HTTP/1.1
+Host: localhost:8000
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "name": "John's Shopping List"
+}
+
+### Create a item in John's shopping list
+POST /api/lists/1/items HTTP/1.1
+Host: localhost:8000
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "name": "Milk",
+  "quantity": 2
+}
+
+### Create another item in John's shopping list
+POST /api/lists/1/items HTTP/1.1
+Host: localhost:8000
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "name": "Eggs",
+  "quantity": 12,
+  "bought": false
+}
+
+#### Get all shopping lists from John (should return the list with items)
+GET /api/lists HTTP/1.1
+Host: localhost:8000
+Authorization: Bearer {{TOKEN}}
+
+#### Get a specific shopping list by ID from John (should return the list with items)
+GET /api/lists/1 HTTP/1.1
+Host: localhost:8000
+Authorization: Bearer {{TOKEN}}
+
+### Update the name of John's shopping list
+PUT /api/lists/1 HTTP/1.1
+Host: localhost:8000
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "name": "John's Updated Shopping List"
+}
+
+#### Delete a item from John's shopping list
+DELETE /api/lists/1/items/1 HTTP/1.1
+Host: localhost:8000
+Authorization: Bearer {{TOKEN}}
+
+### Update a item in John's shopping list
+PATCH /api/lists/1/items/2 HTTP/1.1
+Host: localhost:8000
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "bought": true
+}
+
+### Get all shopping lists from John (should return the updated list with items)
+GET /api/lists HTTP/1.1
+Host: localhost:8000
+Authorization: Bearer {{TOKEN}}
+
+### Create another shopping list for John
+POST /api/lists HTTP/1.1
+Host: localhost:8000
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "name": "John's Second Shopping List"
+}
+
+#### Get all shopping lists from John (should return both lists)
+GET /api/lists HTTP/1.1
+Host: localhost:8000
+Authorization: Bearer {{TOKEN}}
+
+#### Delete John's second shopping list
+DELETE /api/lists/2 HTTP/1.1
+Host: localhost:8000
+Authorization: Bearer {{TOKEN}}
+
+### Get all shopping lists from John (should return only the first list)
+GET /api/lists HTTP/1.1
+Host: localhost:8000
+Authorization: Bearer {{TOKEN}}

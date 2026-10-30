@@ -2,15 +2,15 @@ import express from 'express';
 import swaggerUi from 'swagger-ui-express';
 import yaml from 'yamljs';
 import * as api from './web/api/shopping-lists-api.mjs';
+import * as userApi from './web/api/users-api.mjs';
+import authMiddleware from './web/auth-middleware.mjs';
 
 // WARNING:
 // This is a very simple version of Shopping Lists Web Application.
 // - Lists are in memory (in services);
-// - Without Web API documentation;
 // - There is a partial module organization;
 //    - Missing data module (currently, services = services + data);
 //    - Missing dependency injection;
-// - Without users and authentication;
 // - Without asynchronous operations;
 // - Without persistent storage (no database);
 // - No unit tests;
@@ -31,6 +31,13 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 // Middleware to parse JSON request bodies
 app.use(express.json());
+
+// This route is for creating a new user (registration)
+// There is no authentication required for this route, as it is for new users to register
+app.post('/api/users', userApi.createUser);
+
+// Authenticate all API requests after this middleware
+app.use('/api', authMiddleware);
 
 // Routes:
 
@@ -58,9 +65,8 @@ app.patch('/api/lists/:id/items/:itemId', api.updateItem);
 // DELETE /api/lists/:id/items/:itemId - Delete an item from a specific shopping list
 app.delete('/api/lists/:id/items/:itemId', api.deleteItem);
 
-
 // App listening...
 app.listen(PORT, () => {
-  console.log(`Shopping Lists app listening on port ${PORT}!`);
+  console.log(`Shopping Lists app listening at http://localhost:${PORT}`);
   console.log(`Swagger UI available at http://localhost:${PORT}/api-docs`);
 });

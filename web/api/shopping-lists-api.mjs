@@ -7,7 +7,7 @@ import { InternalError } from '../../commons/errors.mjs';
 // Get all lists
 export function getLists(req, res){
   // Get the lists from the service
-  const ret = services.getLists();
+  const ret = services.getLists(req.user.id);
 
   if (ret.constructor === InternalError){
     const httpError = mapToHttpError(ret);
@@ -25,7 +25,7 @@ export function getLists(req, res){
 export function getList(req, res){
 
   // Get the list from the service by id
-  const ret = services.getList(req.params.id);
+  const ret = services.getList(req.user.id, req.params.id);
 
   // If the returned value is an error response, send the appropriate HTTP status and message
   if (ret.constructor === InternalError){
@@ -44,7 +44,7 @@ export function getList(req, res){
 export function createList(req, res){
 
   // Create a new list using the service
-  const ret = services.createNewList(req.body?.name);
+  const ret = services.createNewList(req.user.id, req.body?.name);
 
   // If the returned value is an error response, send the appropriate HTTP status and message
   if (ret.constructor === InternalError){
@@ -67,7 +67,7 @@ export function createList(req, res){
 export function updateList(req, res){
 
   // Update the list using the service
-  const ret = services.updateList(req.params.id, req.body?.name);
+  const ret = services.updateList(req.user.id, req.params.id, req.body?.name);
 
   // If the returned value is an error response, send the appropriate HTTP status and message
   if (ret.constructor === InternalError){
@@ -89,7 +89,7 @@ export function updateList(req, res){
 export function deleteList(req, res){
 
   // Remove the list using the service
-  const ret = services.removeList(req.params.id);
+  const ret = services.removeList(req.user.id, req.params.id);
 
   // If the returned value is an error response, send the appropriate HTTP status and message
   if (ret.constructor === InternalError){
@@ -113,7 +113,8 @@ export function deleteList(req, res){
 export function addItem(req, res){
 
   // Add an item to the list using the service
-  const ret = services.addItemToList(req.params.id, req.body);
+  const ret = services.addItemToList(req.user.id, req.params.id, req.body);
+
   // If the returned value is an error response, send the appropriate HTTP status and message
   if (ret.constructor === InternalError){
     const httpError = mapToHttpError(ret);
@@ -135,7 +136,7 @@ export function addItem(req, res){
 export function updateItem(req, res){
 
   // Update the item in the list using the service
-  const ret = services.updateItemFromList(req.params.id, req.params.itemId, req.body);
+  const ret = services.updateItemFromList(req.user.id, req.params.id, req.params.itemId, req.body);
 
   // If the returned value is an error response, send the appropriate HTTP status and message
   if (ret.constructor === InternalError){
@@ -157,8 +158,8 @@ export function updateItem(req, res){
 export function deleteItem(req, res){
 
   // Remove the item from the list using the service
-  const ret = services.removeItemFromList(req.params.id, req.params.itemId);
-
+  const ret = services.removeItemFromList(req.user.id, req.params.id, req.params.itemId);
+  
   // If the returned value is an error response, send the appropriate HTTP status and message
   if (ret.constructor === InternalError){
     const httpError = mapToHttpError(ret);

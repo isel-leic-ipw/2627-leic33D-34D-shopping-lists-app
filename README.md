@@ -4,13 +4,18 @@ A web application for creating and managing shopping lists, developed for the AP
 
 ## Features
 
+- Create a user.
+- Authenticate requests with an API token (Bearer).
 - Get all shopping lists.
 - Get, create, edit and remove a shopping list.
 - Add, update partially and remove items from a list.
 - Requests and responses must be in JSON format.
+- Each user only accesses their own shopping lists.
 
 ## Application Resources
 
+- `/api/users`
+    - POST (create a user, no authentication required)
 - `/api/lists`
     - GET (get all shopping lists)
     - POST (create a shopping list)
@@ -23,6 +28,14 @@ A web application for creating and managing shopping lists, developed for the AP
 - `/api/lists/:id/items/:itemId`
     - DELETE (remove an item from a shopping list)
     - PATCH (partial update of an item in a shopping list)
+
+## Authentication
+
+All resources, except `POST /api/users`, require the header `Authorization: Bearer <apiToken>`. The `apiToken` is returned when a user is created.
+
+## API Documentation
+
+The OpenAPI specification is in `docs/openapi.yaml`. Swagger UI is available at `http://localhost:8000/api-docs`.
 
 ## Getting Started
 

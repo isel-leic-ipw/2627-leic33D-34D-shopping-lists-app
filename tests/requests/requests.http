@@ -1,15 +1,21 @@
+@TOKEN_ALICE=75ea9010-65e4-4fa8-b13c-7c0348b16e12
+@TOKEN={{TOKEN_ALICE}}
+
 ### Get all shopping lists
 GET /api/lists HTTP/1.1
 Host: localhost:8000
+Authorization: Bearer {{TOKEN}}
 
 ### Get a specific shopping list by ID
 GET /api/lists/1 HTTP/1.1
 Host: localhost:8000
+Authorization: Bearer {{TOKEN}}
 
 ### Create a new shopping list
 POST /api/lists HTTP/1.1
 Host: localhost:8000
 Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
 
 {
   "name": "New Shopping List"
@@ -18,11 +24,13 @@ Content-Type: application/json
 ### Get the new shopping list by ID
 GET /api/lists/3 HTTP/1.1
 Host: localhost:8000
+Authorization: Bearer {{TOKEN}}
 
 ### Update the name of a shopping list
 PUT /api/lists/3 HTTP/1.1
 Host: localhost:8000
-Content-Type: application/json  
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}} 
 
 {
   "name": "Shopping for Saturday dinner"
@@ -31,6 +39,7 @@ Content-Type: application/json
 ### Delete a shopping list
 DELETE /api/lists/2 HTTP/1.1
 Host: localhost:8000
+Authorization: Bearer {{TOKEN}}
 
 ### ----- Items -----
 
@@ -38,6 +47,7 @@ Host: localhost:8000
 POST /api/lists/3/items HTTP/1.1
 Host: localhost:8000
 Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
   
 {
   "name": "Pasta",
@@ -49,6 +59,7 @@ Content-Type: application/json
 POST /api/lists/3/items HTTP/1.1
 Host: localhost:8000
 Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
   
 {
   "name": "Shrimps",
@@ -60,11 +71,13 @@ Content-Type: application/json
 ### Delete an item in a specific shopping list
 DELETE /api/lists/1/items/1 HTTP/1.1
 Host: localhost:8000
+Authorization: Bearer {{TOKEN}}
 
 ### Create an item in the same shopping list to verify the the unique id
 POST /api/lists/1/items HTTP/1.1
 Host: localhost:8000
 Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
 
 {
   "name": "Milk",
@@ -75,8 +88,14 @@ Content-Type: application/json
 ### Update an item in a specific shopping list
 PATCH /api/lists/1/items/2 HTTP/1.1
 Host: localhost:8000
-Content-Type: application/json  
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
 
 {
   "bought": false
 }
+
+### Get all shopping lists to verify the changes
+GET /api/lists HTTP/1.1
+Host: localhost:8000
+Authorization: Bearer {{TOKEN}}
