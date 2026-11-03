@@ -179,6 +179,7 @@ Host: localhost:8000
 Authorization: Bearer {{TOKEN}}
 
 {
+  "name": "It doesn't matter because the Content-Type header is missing",
   "bought": false
 }
 

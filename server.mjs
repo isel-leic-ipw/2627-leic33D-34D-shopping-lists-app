@@ -7,16 +7,14 @@ import authMiddleware from './web/auth-middleware.mjs';
 
 // WARNING:
 // This is a very simple version of Shopping Lists Web Application.
-// - Lists are in memory (in services);
-// - There is a partial module organization;
-//    - Missing data module (currently, services = services + data);
-//    - Missing dependency injection;
+// - Lists are in memory (in data);
+// - Without dependency injection;
 // - Without asynchronous operations;
 // - Without persistent storage (no database);
 // - No unit tests;
 // - No integration tests;
 // - No end-to-end tests (only manual tests with browser and Rest Client);
-// - Without improvements with middlewares, error handling, etc.
+// - Without centralised server error handling.
 
 const PORT = 8000;  // Port number for the tests
 

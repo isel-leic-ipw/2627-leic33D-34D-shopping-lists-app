@@ -1,177 +1,146 @@
-import * as services from '../../services/shopping-lists-services-and-data.mjs';
-import mapToHttpError from '../map-to-http-errors.mjs';
+import * as services from '../../services/shopping-lists-services.mjs';
+import wrapperHandler from './handler-request-response.mjs';
 import { InternalError } from '../../commons/errors.mjs';
 
-// TODO: include a handler to avoid code repetition in all handlers.
+// Operations on shopping lists and items in a list using the wrapperHandler function
+export const getLists = wrapperHandler(getListsInternal);
+export const getList = wrapperHandler(getListInternal);
+export const createList = wrapperHandler(createListInternal);
+export const updateList = wrapperHandler(updateListInternal);
+export const deleteList = wrapperHandler(deleteListInternal);
+export const addItem = wrapperHandler(addItemInternal);
+export const updateItem = wrapperHandler(updateItemInternal);
+export const deleteItem = wrapperHandler(deleteItemInternal);
 
 // Get all lists
-export function getLists(req, res){
+function getListsInternal(req, res){
+
   // Get the lists from the service
   const ret = services.getLists(req.user.id);
 
-  if (ret.constructor === InternalError){
-    const httpError = mapToHttpError(ret);
-    res.status(httpError.status);
-    res.json(httpError.error);
-    return;
+  // In case of success, return the lists as a JSON response
+  if (ret.constructor !== InternalError){
+    const lists = ret;
+    return {lists: lists};
   }
-
-  // Return the lists from the service as JSON response
-  const lists = ret;
-  res.json({lists: lists});
+  return ret;
 }
 
 // Get a list by id
-export function getList(req, res){
+function getListInternal(req, res){
 
   // Get the list from the service by id
-  const ret = services.getList(req.user.id, req.params.id);
-
-  // If the returned value is an error response, send the appropriate HTTP status and message
-  if (ret.constructor === InternalError){
-    const httpError = mapToHttpError(ret);
-    res.status(httpError.status);
-    res.json(httpError.error);
-    return;
-  }
-
-  // Otherwise, the list was found, so send it as a JSON response
-  const list = ret;
-  res.json(list);
+  return services.getList(req.user.id, req.params.id);
 }
 
 // Create a new list
-export function createList(req, res){
+function createListInternal(req, res){
 
   // Create a new list using the service
   const ret = services.createNewList(req.user.id, req.body?.name);
 
-  // If the returned value is an error response, send the appropriate HTTP status and message
-  if (ret.constructor === InternalError){
-    const httpError = mapToHttpError(ret);
-    res.status(httpError.status);
-    res.json(httpError.error);
-    return;
+  // In case of success, return a message indicating that the list was created
+  if (ret.constructor !== InternalError){
+    const newList = ret;
+    res.status(201);
+    return {
+      message: `List id ${newList.id} was added!`,
+      list: newList
+    };
   }
 
-  // Otherwise, the list was created successfully, so send it as a JSON response
-  const newList = ret;
-  res.status(201);
-  res.json({
-    message: `List id ${newList.id} was added!`,
-    list: newList
-  });
+  return ret;
 }
 
 // Update a list by id
-export function updateList(req, res){
+function updateListInternal(req, res){
 
   // Update the list using the service
   const ret = services.updateList(req.user.id, req.params.id, req.body?.name);
 
-  // If the returned value is an error response, send the appropriate HTTP status and message
-  if (ret.constructor === InternalError){
-    const httpError = mapToHttpError(ret);
-    res.status(httpError.status);
-    res.json(httpError.error);
-    return;
+  // In case of success, return a message indicating that the list was updated
+  if (ret.constructor !== InternalError){
+    const list = ret;
+    return {
+      message: `List with id ${req.params.id} updated.`, 
+      list: list
+    };
   }
-
-  // Otherwise, the list was updated successfully, so send it as a JSON response
-  const list = ret;
-  res.json({
-    message: `List with id ${req.params.id} updated.`, 
-    list: list
-  });   
+  
+  return ret;
 }
 
 // Delete a list by id
-export function deleteList(req, res){
+function deleteListInternal(req, res){
 
   // Remove the list using the service
   const ret = services.removeList(req.user.id, req.params.id);
 
-  // If the returned value is an error response, send the appropriate HTTP status and message
-  if (ret.constructor === InternalError){
-    const httpError = mapToHttpError(ret);
-    res.status(httpError.status);
-    res.json(httpError.error);
-    return;
+  // In case of success, return a message indicating that the list was deleted
+  if (ret.constructor !== InternalError){
+    const deletedList = ret;
+    return {
+      message: `List with id ${req.params.id} deleted.`,
+      list: deletedList
+    };
   }
 
-  // Otherwise, the list was deleted successfully, so send it as a JSON response
-  const deletedList = ret;
-  res.json({
-    message: `List with id ${req.params.id} deleted.`,
-    list: deletedList
-  });
+  return ret;
 }
 
 // ---- Items in a list ----
 
 // Add an item to a list
-export function addItem(req, res){
+function addItemInternal(req, res){
 
   // Add an item to the list using the service
   const ret = services.addItemToList(req.user.id, req.params.id, req.body);
 
-  // If the returned value is an error response, send the appropriate HTTP status and message
-  if (ret.constructor === InternalError){
-    const httpError = mapToHttpError(ret);
-    res.status(httpError.status);
-    res.json(httpError.error);
-    return;
+  // In case of success, return a message indicating that the item was added
+  if (ret.constructor !== InternalError){
+    const item = ret;
+    res.status(201);
+    return {
+      message: `Item id ${item.id} was added to list ${req.params.id}!`,
+      item: item
+    };
   }
 
-  // Otherwise, the item was added successfully, so send it as a JSON response
-  const item = ret;
-  res.status(201);
-  res.json({
-    message: `Item id ${item.id} was added to list ${req.params.id}!`,
-    item: item
-  });
+  return ret;
 }
 
 // Partially update an item of a list
-export function updateItem(req, res){
+function updateItemInternal(req, res){
 
   // Update the item in the list using the service
   const ret = services.updateItemFromList(req.user.id, req.params.id, req.params.itemId, req.body);
 
-  // If the returned value is an error response, send the appropriate HTTP status and message
-  if (ret.constructor === InternalError){
-    const httpError = mapToHttpError(ret);
-    res.status(httpError.status);
-    res.json(httpError.error);
-    return;
+  // In case of success, return a message indicating that the item was updated
+  if (ret.constructor !== InternalError){
+    const item = ret;
+    return {
+      message: `Item with id ${item.id} updated.`, 
+      item: item
+    };
   }
 
-  // Otherwise, the item was updated successfully, so send it as a JSON response
-  const item = ret;
-  res.json({
-        message: `Item with id ${item.id} updated.`, 
-        item: item
-    });
+  return ret;
 }
 
 // Delete an item from a list
-export function deleteItem(req, res){
+function deleteItemInternal(req, res){
 
   // Remove the item from the list using the service
   const ret = services.removeItemFromList(req.user.id, req.params.id, req.params.itemId);
-  
-  // If the returned value is an error response, send the appropriate HTTP status and message
-  if (ret.constructor === InternalError){
-    const httpError = mapToHttpError(ret);
-    res.status(httpError.status);
-    res.json(httpError.error);
-    return;
+
+  // In case of success, return a message indicating that the item was deleted
+  if (ret.constructor !== InternalError){
+    const deletedItem = ret;
+    return {
+      message: `Item with id ${deletedItem.id} deleted.`,
+      item: deletedItem
+    };
   }
 
-  // Otherwise, the item was deleted successfully, so send it as a JSON response
-  const deletedItem = ret;
-  res.json({
-    message: `Item with id ${deletedItem.id} deleted.`,
-    item: deletedItem
-  });
+  return ret;
 }

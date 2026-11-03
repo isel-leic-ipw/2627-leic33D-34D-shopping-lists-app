@@ -1,5 +1,9 @@
 #@TOKEN=write-the-john-token-here
-@TOKEN=8d82917a-14cc-4a14-a250-f78dc2706818
+@TOKEN=74b77ef1-80a3-4b84-be3c-8355ee4cfea8
+@FIRST_LIST_ID=7
+@SECOND_LIST_ID=8
+@FIRST_ITEM_ID=20
+@SECOND_ITEM_ID=21
 
 ### Create an user
 POST /api/users HTTP/1.1
@@ -21,7 +25,7 @@ Host: localhost:8000
 Authorization: Bearer {{TOKEN}}
 
 ### GET a specific shopping list by ID from John (should return 404 Not Found)
-GET /api/lists/1 HTTP/1.1
+GET /api/lists/{{FIRST_LIST_ID}} HTTP/1.1
 Host: localhost:8000
 Authorization: Bearer {{TOKEN}}
 
@@ -36,7 +40,7 @@ Authorization: Bearer {{TOKEN}}
 }
 
 ### Create a item in John's shopping list
-POST /api/lists/1/items HTTP/1.1
+POST /api/lists/{{FIRST_LIST_ID}}/items HTTP/1.1
 Host: localhost:8000
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
@@ -47,7 +51,7 @@ Authorization: Bearer {{TOKEN}}
 }
 
 ### Create another item in John's shopping list
-POST /api/lists/1/items HTTP/1.1
+POST /api/lists/{{FIRST_LIST_ID}}/items HTTP/1.1
 Host: localhost:8000
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
@@ -64,12 +68,12 @@ Host: localhost:8000
 Authorization: Bearer {{TOKEN}}
 
 #### Get a specific shopping list by ID from John (should return the list with items)
-GET /api/lists/1 HTTP/1.1
+GET /api/lists/{{FIRST_LIST_ID}} HTTP/1.1
 Host: localhost:8000
 Authorization: Bearer {{TOKEN}}
 
 ### Update the name of John's shopping list
-PUT /api/lists/1 HTTP/1.1
+PUT /api/lists/{{FIRST_LIST_ID}} HTTP/1.1
 Host: localhost:8000
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
@@ -78,13 +82,13 @@ Authorization: Bearer {{TOKEN}}
   "name": "John's Updated Shopping List"
 }
 
-#### Delete a item from John's shopping list
-DELETE /api/lists/1/items/1 HTTP/1.1
+#### Delete the first item from John's shopping list
+DELETE /api/lists/{{FIRST_LIST_ID}}/items/{{FIRST_ITEM_ID}} HTTP/1.1
 Host: localhost:8000
 Authorization: Bearer {{TOKEN}}
 
 ### Update a item in John's shopping list
-PATCH /api/lists/1/items/2 HTTP/1.1
+PATCH /api/lists/{{FIRST_LIST_ID}}/items/{{SECOND_ITEM_ID}} HTTP/1.1
 Host: localhost:8000
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
@@ -114,7 +118,7 @@ Host: localhost:8000
 Authorization: Bearer {{TOKEN}}
 
 #### Delete John's second shopping list
-DELETE /api/lists/2 HTTP/1.1
+DELETE /api/lists/{{SECOND_LIST_ID}} HTTP/1.1
 Host: localhost:8000
 Authorization: Bearer {{TOKEN}}
 

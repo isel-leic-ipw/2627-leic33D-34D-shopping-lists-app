@@ -23,7 +23,7 @@ export default {
     LISTS_NOT_FOUND: () => new InternalError(
         ERROR_CODES.LISTS_NOT_FOUND_CODE,
         'No shopping lists found',
-        'There are no shopping lists available in the system. Contact the administrator'
+        'There are no shopping lists available in the system.'
     ),
     LIST_NOT_FOUND: (listId) => new InternalError(
         ERROR_CODES.LIST_NOT_FOUND_CODE,

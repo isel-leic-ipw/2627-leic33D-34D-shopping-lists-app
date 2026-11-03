@@ -1,5 +1,6 @@
 @TOKEN_ALICE=75ea9010-65e4-4fa8-b13c-7c0348b16e12
 @TOKEN={{TOKEN_ALICE}}
+@NEW_LIST_ID=7
 
 ### Get all shopping lists
 GET /api/lists HTTP/1.1
@@ -22,12 +23,12 @@ Authorization: Bearer {{TOKEN}}
 }
 
 ### Get the new shopping list by ID
-GET /api/lists/3 HTTP/1.1
+GET /api/lists/{{NEW_LIST_ID}} HTTP/1.1
 Host: localhost:8000
 Authorization: Bearer {{TOKEN}}
 
 ### Update the name of a shopping list
-PUT /api/lists/3 HTTP/1.1
+PUT /api/lists/{{NEW_LIST_ID}} HTTP/1.1
 Host: localhost:8000
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}} 
@@ -44,7 +45,7 @@ Authorization: Bearer {{TOKEN}}
 ### ----- Items -----
 
 ### Create an item in a specific shopping list
-POST /api/lists/3/items HTTP/1.1
+POST /api/lists/{{NEW_LIST_ID}}/items HTTP/1.1
 Host: localhost:8000
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
@@ -56,7 +57,7 @@ Authorization: Bearer {{TOKEN}}
 }
 
 ### Create another item in a specific shopping list
-POST /api/lists/3/items HTTP/1.1
+POST /api/lists/{{NEW_LIST_ID}}/items HTTP/1.1
 Host: localhost:8000
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}

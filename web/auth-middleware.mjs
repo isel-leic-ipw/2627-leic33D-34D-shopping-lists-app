@@ -1,4 +1,4 @@
-import { getUserByToken } from '../services/users-services-and-data.mjs';
+import { getUserByToken } from '../services/users-services.mjs';
 import ERRORS, { InternalError } from '../commons/errors.mjs';
 import mapToHttpError from './map-to-http-errors.mjs';
 
