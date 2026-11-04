@@ -54,7 +54,7 @@ export function createNewList(userId, listName){
     if (! listNameIsValid(listName)){
       return ERRORS.INVALID_PARAMETER('name', 'The name of the list is required');
     }
-    return data.createNewList(userId, listName);
+    return data.createNewList(userId, listName.trim());
   });
 }
 
@@ -68,7 +68,7 @@ export function updateList(userId, id, name){
       return ERRORS.INVALID_PARAMETER('name', 'The name of the list is required');
     }
 
-    return data.updateList(userId, id, name);
+    return data.updateList(userId, id, name.trim());
   });
 }
 
