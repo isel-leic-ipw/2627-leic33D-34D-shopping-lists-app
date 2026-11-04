@@ -2,10 +2,6 @@ import ERRORS, { InternalError } from '../../commons/errors.mjs';
 import itemFactory from './item-factory.mjs';
 import shoppingListFactory from './shopping-list-factory.mjs';
 
-// This modules represents services + data
-// TODO: separate service module from data module.
-// TODO: define a interface between web api and service. 
-
 // DATA in memory: shopping lists and items
 const USER_LISTS = {
     1: [
