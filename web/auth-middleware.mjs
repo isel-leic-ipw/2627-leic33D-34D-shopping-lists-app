@@ -1,6 +1,6 @@
 import { getUserByToken } from '../services/users-services.mjs';
 import ERRORS from '../commons/errors.mjs';
-import { sendHttpError } from '../api/helpers.mjs';
+import { sendHttpError } from './api/helpers.mjs';
 
 // Authenticates the request using the "Authorization: Bearer <token>" header
 export default function authMiddleware(req, res, next){
