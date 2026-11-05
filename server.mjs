@@ -9,7 +9,6 @@ import authMiddleware from './web/auth-middleware.mjs';
 // This is a very simple version of Shopping Lists Web Application.
 // - Lists are in memory (in data);
 // - Without dependency injection;
-// - Without asynchronous operations;
 // - Without persistent storage (no database);
 // - No unit tests;
 // - No integration tests;

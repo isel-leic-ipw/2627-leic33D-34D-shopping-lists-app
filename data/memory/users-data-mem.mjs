@@ -7,18 +7,20 @@ const users = [
   { id: 3, username: 'charlie', password: 'test789', apiToken: 'd61b3bc1-3679-4981-97cd-cdc736667851' }
 ];
 
-// Get a user by api token
+// All functions return a Promise.
+
+// Get a user by api token. Resolves with undefined if there is no such user.
 export function getUserByToken(token){
 
   const user = users.find(user => user.apiToken === token);
-  return user;
+  return Promise.resolve(user);
 }
 
-// Get a user by username
+// Get a user by username. Resolves with undefined if there is no such user.
 export function getUserByUsername(username){
 
   const user = users.find(user => user.username === username);
-  return user;
+  return Promise.resolve(user);
 }
 
 // Create a new user
@@ -32,5 +34,5 @@ export function createUser(username, password){
   // Add the new user to the in-memory users array
   users.push(newUser);
 
-  return newUser;
+  return Promise.resolve(newUser);
 }

@@ -1,8 +1,8 @@
 import * as services from '../../services/shopping-lists-services.mjs';
-import wrapperHandler from './handler-request-response.mjs';
-import { InternalError } from '../../commons/errors.mjs';
+import wrapperHandler from './helpers.mjs';
 
-// Operations on shopping lists and items in a list using the wrapperHandler function
+// Operations on shopping lists and items in a list using the wrapperHandler function.
+// Each internal handler returns a Promise: resolved with the response body or rejected with an InternalError.
 export const getLists = wrapperHandler(getListsInternal);
 export const getList = wrapperHandler(getListInternal);
 export const createList = wrapperHandler(createListInternal);
@@ -15,15 +15,9 @@ export const deleteItem = wrapperHandler(deleteItemInternal);
 // Get all lists
 function getListsInternal(req, res){
 
-  // Get the lists from the service
-  const ret = services.getLists(req.user.id);
-
-  // In case of success, return the lists as a JSON response
-  if (ret.constructor !== InternalError){
-    const lists = ret;
-    return {lists: lists};
-  }
-  return ret;
+  // Get the lists from the service and return them as a JSON response
+  return services.getLists(req.user.id)
+    .then(lists => ({ lists: lists }));
 }
 
 // Get a list by id
@@ -37,55 +31,39 @@ function getListInternal(req, res){
 function createListInternal(req, res){
 
   // Create a new list using the service
-  const ret = services.createNewList(req.user.id, req.body?.name);
-
-  // In case of success, return a message indicating that the list was created
-  if (ret.constructor !== InternalError){
-    const newList = ret;
-    res.status(201);
-    return {
-      message: `List id ${newList.id} was added!`,
-      list: newList
-    };
-  }
-
-  return ret;
+  return services.createNewList(req.user.id, req.body?.name)
+    .then(newList => {
+      // Return a message indicating that the list was created
+      res.status(201);
+      return {
+        message: `List id ${newList.id} was added!`,
+        list: newList
+      };
+    });
 }
 
 // Update a list by id
 function updateListInternal(req, res){
 
   // Update the list using the service
-  const ret = services.updateList(req.user.id, req.params.id, req.body?.name);
-
-  // In case of success, return a message indicating that the list was updated
-  if (ret.constructor !== InternalError){
-    const list = ret;
-    return {
-      message: `List with id ${req.params.id} updated.`, 
+  return services.updateList(req.user.id, req.params.id, req.body?.name)
+    .then(list => ({
+      // Return a message indicating that the list was updated
+      message: `List with id ${req.params.id} updated.`,
       list: list
-    };
-  }
-  
-  return ret;
+    }));
 }
 
 // Delete a list by id
 function deleteListInternal(req, res){
 
   // Remove the list using the service
-  const ret = services.removeList(req.user.id, req.params.id);
-
-  // In case of success, return a message indicating that the list was deleted
-  if (ret.constructor !== InternalError){
-    const deletedList = ret;
-    return {
+  return services.removeList(req.user.id, req.params.id)
+    .then(deletedList => ({
+      // Return a message indicating that the list was deleted
       message: `List with id ${req.params.id} deleted.`,
       list: deletedList
-    };
-  }
-
-  return ret;
+    }));
 }
 
 // ---- Items in a list ----
@@ -94,53 +72,37 @@ function deleteListInternal(req, res){
 function addItemInternal(req, res){
 
   // Add an item to the list using the service
-  const ret = services.addItemToList(req.user.id, req.params.id, req.body);
-
-  // In case of success, return a message indicating that the item was added
-  if (ret.constructor !== InternalError){
-    const item = ret;
-    res.status(201);
-    return {
-      message: `Item id ${item.id} was added to list ${req.params.id}!`,
-      item: item
-    };
-  }
-
-  return ret;
+  return services.addItemToList(req.user.id, req.params.id, req.body)
+    .then(item => {
+      // Return a message indicating that the item was added
+      res.status(201);
+      return {
+        message: `Item id ${item.id} was added to list ${req.params.id}!`,
+        item: item
+      };
+    });
 }
 
 // Partially update an item of a list
 function updateItemInternal(req, res){
 
   // Update the item in the list using the service
-  const ret = services.updateItemFromList(req.user.id, req.params.id, req.params.itemId, req.body);
-
-  // In case of success, return a message indicating that the item was updated
-  if (ret.constructor !== InternalError){
-    const item = ret;
-    return {
-      message: `Item with id ${item.id} updated.`, 
+  return services.updateItemFromList(req.user.id, req.params.id, req.params.itemId, req.body)
+    .then(item => ({
+      // Return a message indicating that the item was updated
+      message: `Item with id ${item.id} updated.`,
       item: item
-    };
-  }
-
-  return ret;
+    }));
 }
 
 // Delete an item from a list
 function deleteItemInternal(req, res){
 
   // Remove the item from the list using the service
-  const ret = services.removeItemFromList(req.user.id, req.params.id, req.params.itemId);
-
-  // In case of success, return a message indicating that the item was deleted
-  if (ret.constructor !== InternalError){
-    const deletedItem = ret;
-    return {
+  return services.removeItemFromList(req.user.id, req.params.id, req.params.itemId)
+    .then(deletedItem => ({
+      // Return a message indicating that the item was deleted
       message: `Item with id ${deletedItem.id} deleted.`,
       item: deletedItem
-    };
-  }
-
-  return ret;
+    }));
 }

@@ -13,10 +13,10 @@ function checkRequired(params){
   return null;
 }
 
-// Executes the action if all required parameters are present, otherwise returns an InternalError.
+// Executes the action if all required parameters are present, otherwise returns a Promise rejected with an InternalError.
 function withRequired(params, action) {
     const error = checkRequired(params);
-    return error ? error : action();
+    return error ? Promise.reject(error) : action();
 }
 
 // --------- Shopping lists services ---------
@@ -36,12 +36,8 @@ export function getList(userId, id){
   console.log(`Getting list of id ${id} for user ${userId}`);
 
   return withRequired({ userId, id }, () => {
-    // Get the list from the data module by id
-    const list = data.getList(userId, id);
-    if (!list) {
-      return ERRORS.LISTS_NOT_FOUND(`List with id ${id} not found`);
-    }
-    return list;
+    // Get the list from the data module by id. If it does not exist, the Promise is rejected.
+    return data.getList(userId, id);
   });
 }
 
@@ -52,7 +48,7 @@ export function createNewList(userId, listName){
 
   return withRequired({ userId }, () => {
     if (! listNameIsValid(listName)){
-      return ERRORS.INVALID_PARAMETER('name', 'The name of the list is required');
+      return Promise.reject(ERRORS.INVALID_PARAMETER('name', 'The name of the list is required'));
     }
     return data.createNewList(userId, listName.trim());
   });
@@ -65,7 +61,7 @@ export function updateList(userId, id, name){
 
   return withRequired({ userId, id }, () => {
     if (! listNameIsValid(name)){
-      return ERRORS.INVALID_PARAMETER('name', 'The name of the list is required');
+      return Promise.reject(ERRORS.INVALID_PARAMETER('name', 'The name of the list is required'));
     }
 
     return data.updateList(userId, id, name.trim());
@@ -94,7 +90,7 @@ export function addItemToList(userId, idList, newItem){
     // Validate the new item before adding it to the list
     const validationError = validateNewItem(newItem);
     if (validationError){
-      return validationError;
+      return Promise.reject(validationError);
     }
 
     return data.addItemToList(userId, idList, newItem);
@@ -109,7 +105,7 @@ export function updateItemFromList(userId, listId, itemId, partialItem){
   return withRequired({ userId, listId, itemId }, () => {
     const validationError = validatePartialItem(partialItem);
     if (validationError){
-      return validationError;
+      return Promise.reject(validationError);
     }
 
     return data.updateItemFromList(userId, listId, itemId, partialItem);
