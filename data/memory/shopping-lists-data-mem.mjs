@@ -1,4 +1,4 @@
-import ERRORS from '../../commons/errors.mjs';
+import Errors from '../../commons/errors.mjs';
 import itemFactory from './item-factory.mjs';
 import shoppingListFactory from './shopping-list-factory.mjs'; 
 
@@ -42,28 +42,42 @@ const USER_LISTS = {
 
 // All functions return a Promise: resolved with the result or rejected with an InternalError.
 
+// --------- Shopping lists data in memory ---------
+
+// Export the functions for managing shopping lists and items in memory
+export default {
+    getLists,
+    getList,
+    createNewList,
+    updateList,
+    removeList,
+    addItemToList,
+    updateItemFromList,
+    removeItemFromList
+};
+
 // Get all lists
-export function getLists(userId){
+function getLists(userId){
 
   // Return the USER_LISTS array from the user id
   return Promise.resolve(USER_LISTS[userId] || []);
 }
 
 // Get a list by id
-export function getList(userId, id){
+function getList(userId, id){
 
   // Find the list with the specified id in the USER_LISTS array of a user
   const list = (USER_LISTS[userId] || []).find(list => list.id == id);
   
   if (!list){
-    return Promise.reject(ERRORS.LIST_NOT_FOUND(id));
+    return Promise.reject(Errors.LIST_NOT_FOUND(id));
   }
 
   return Promise.resolve(list);
 }
 
 // Create a new list
-export function createNewList(userId, listName){
+function createNewList(userId, listName){
 
   // Initialize the USER_LISTS array for the user if it doesn't exist
   if (!USER_LISTS[userId]){
@@ -81,7 +95,7 @@ export function createNewList(userId, listName){
 }
 
 // Update a list with a name
-export function updateList(userId, id, name){
+function updateList(userId, id, name){
 
 
   // Find the index of the list with the specified id in the USER_LISTS array
@@ -89,7 +103,7 @@ export function updateList(userId, id, name){
 
   // If the list is not found, reject with an error
   if (listIndex === -1){
-    return Promise.reject(ERRORS.LIST_NOT_FOUND(id));
+    return Promise.reject(Errors.LIST_NOT_FOUND(id));
   }
 
   // Update the name of the list
@@ -100,13 +114,13 @@ export function updateList(userId, id, name){
 }
 
 // Remove a list by id
-export function removeList(userId, id){
+function removeList(userId, id){
 
   // Find the index of the list with the specified id in the USER_LISTS array
   const listIndex = (USER_LISTS[userId] || []).findIndex(list => list.id == id);
   
   if (listIndex == -1){
-    return Promise.reject(ERRORS.LIST_NOT_FOUND(id));
+    return Promise.reject(Errors.LIST_NOT_FOUND(id));
   }
 
   // Remove the list from the USER_LISTS array
@@ -120,7 +134,7 @@ export function removeList(userId, id){
 // ---- Items in a list ----
 
 // Add item to a specific list
-export function addItemToList(userId, idList, newItem){
+function addItemToList(userId, idList, newItem){
 
   // If the list is not found, the rejection of getList is propagated
   return getList(userId, idList).then(list => {
@@ -133,14 +147,14 @@ export function addItemToList(userId, idList, newItem){
 }
 
 // Partially update an item of a list
-export function updateItemFromList(userId, listId, itemId, partialItem){
+function updateItemFromList(userId, listId, itemId, partialItem){
   
   return getList(userId, listId).then(list => {
 
     // Find the index of the item with the specified itemId in the list's items array
     const itemIndex = list.items.findIndex(item => item.id == itemId);
     if (itemIndex == -1){
-      return Promise.reject(ERRORS.ITEM_NOT_FOUND(itemId));
+      return Promise.reject(Errors.ITEM_NOT_FOUND(itemId));
     }
 
     // The partial item is valid, so it is safe to update the item
@@ -157,14 +171,14 @@ export function updateItemFromList(userId, listId, itemId, partialItem){
 }
 
 // Remove an item from a list
-export function removeItemFromList(userId, listId, itemId){
+function removeItemFromList(userId, listId, itemId){
 
   return getList(userId, listId).then(list => {
 
     // Find the index of the item with the specified itemId in the list's items array
     const itemIndex = list.items.findIndex(item => item.id == itemId);
     if (itemIndex == -1){
-      return Promise.reject(ERRORS.ITEM_NOT_FOUND(itemId));
+      return Promise.reject(Errors.ITEM_NOT_FOUND(itemId));
     }
 
     // Remove the item from the list

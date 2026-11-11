@@ -7,24 +7,30 @@ const users = [
   { id: 3, username: 'charlie', password: 'test789', apiToken: 'd61b3bc1-3679-4981-97cd-cdc736667851' }
 ];
 
+export default {
+  getUserByToken,
+  getUserByUsername,
+  createUser
+};
+
 // All functions return a Promise.
 
 // Get a user by api token. Resolves with undefined if there is no such user.
-export function getUserByToken(token){
+function getUserByToken(token){
 
   const user = users.find(user => user.apiToken === token);
   return Promise.resolve(user);
 }
 
 // Get a user by username. Resolves with undefined if there is no such user.
-export function getUserByUsername(username){
+function getUserByUsername(username){
 
   const user = users.find(user => user.username === username);
   return Promise.resolve(user);
 }
 
 // Create a new user
-export function createUser(username, password){
+function createUser(username, password){
 
   // Create a new user object with a unique ID and an API token
   const newUserId = users.length + 1;

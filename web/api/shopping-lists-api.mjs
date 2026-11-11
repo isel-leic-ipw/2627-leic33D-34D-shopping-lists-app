@@ -1,108 +1,127 @@
-import * as services from '../../services/shopping-lists-services.mjs';
 import wrapperHandler from './helpers.mjs';
+import createBearerAuthMiddleware from '../auth-middleware.mjs';
 
-// Operations on shopping lists and items in a list using the wrapperHandler function.
-// Each internal handler returns a Promise: resolved with the response body or rejected with an InternalError.
-export const getLists = wrapperHandler(getListsInternal);
-export const getList = wrapperHandler(getListInternal);
-export const createList = wrapperHandler(createListInternal);
-export const updateList = wrapperHandler(updateListInternal);
-export const deleteList = wrapperHandler(deleteListInternal);
-export const addItem = wrapperHandler(addItemInternal);
-export const updateItem = wrapperHandler(updateItemInternal);
-export const deleteItem = wrapperHandler(deleteItemInternal);
+export default function createShoppingListsApi(shoppingListsServices, usersServices) {
 
-// Get all lists
-function getListsInternal(req, res){
+  if (!shoppingListsServices) {
+    throw new Error('The Shopping Lists services module is required in Shopping Lists API');
+  }
 
-  // Get the lists from the service and return them as a JSON response
-  return services.getLists(req.user.id)
-    .then(lists => ({ lists: lists }));
-}
+  if (!usersServices) {
+    throw new Error('The Users services module is required in Shopping Lists API');
+  }
 
-// Get a list by id
-function getListInternal(req, res){
+  const bearerAuth = createBearerAuthMiddleware(usersServices);
 
-  // Get the list from the service by id
-  return services.getList(req.user.id, req.params.id);
-}
+  // Operations on shopping lists and items in a list using the wrapperHandler function.
+  // Each internal handler returns a Promise: resolved with the response body or rejected with an InternalError.
+  return {
+    // Express accepts an array of middleware functions for each route.
+    // For instance, the getLists route will be, in the server, like this:
+    // app.get('/lists', authMiddleware, wrapperHandler(getListsInternal));
+    getLists: [bearerAuth, wrapperHandler(getListsInternal)],
+    getList: [bearerAuth, wrapperHandler(getListInternal)],
+    createList: [bearerAuth, wrapperHandler(createListInternal)],
+    updateList: [bearerAuth, wrapperHandler(updateListInternal)],
+    deleteList: [bearerAuth, wrapperHandler(deleteListInternal)],
+    addItem: [bearerAuth, wrapperHandler(addItemInternal)],
+    updateItem: [bearerAuth, wrapperHandler(updateItemInternal)],
+    deleteItem: [bearerAuth, wrapperHandler(deleteItemInternal)]
+  };
 
-// Create a new list
-function createListInternal(req, res){
+  // Get all lists
+  function getListsInternal(req, res){
 
-  // Create a new list using the service
-  return services.createNewList(req.user.id, req.body?.name)
-    .then(newList => {
-      // Return a message indicating that the list was created
-      res.status(201);
-      return {
-        message: `List id ${newList.id} was added!`,
-        list: newList
-      };
-    });
-}
+    // Get the lists from the service and return them as a JSON response
+    return shoppingListsServices.getLists(req.user.id)
+      .then(lists => ({ lists: lists }));
+  }
 
-// Update a list by id
-function updateListInternal(req, res){
+  // Get a list by id
+  function getListInternal(req, res){
 
-  // Update the list using the service
-  return services.updateList(req.user.id, req.params.id, req.body?.name)
-    .then(list => ({
-      // Return a message indicating that the list was updated
-      message: `List with id ${req.params.id} updated.`,
-      list: list
-    }));
-}
+    // Get the list from the service by id
+    return shoppingListsServices.getList(req.user.id, req.params.id);
+  }
 
-// Delete a list by id
-function deleteListInternal(req, res){
+  // Create a new list
+  function createListInternal(req, res){
 
-  // Remove the list using the service
-  return services.removeList(req.user.id, req.params.id)
-    .then(deletedList => ({
-      // Return a message indicating that the list was deleted
-      message: `List with id ${req.params.id} deleted.`,
-      list: deletedList
-    }));
-}
+    // Create a new list using the service
+    return shoppingListsServices.createNewList(req.user.id, req.body?.name)
+      .then(newList => {
+        // Return a message indicating that the list was created
+        res.status(201);
+        return {
+          message: `List id ${newList.id} was added!`,
+          list: newList
+        };
+      });
+  }
 
-// ---- Items in a list ----
+  // Update a list by id
+  function updateListInternal(req, res){
 
-// Add an item to a list
-function addItemInternal(req, res){
+    // Update the list using the service
+    return shoppingListsServices.updateList(req.user.id, req.params.id, req.body?.name)
+      .then(list => ({
+        // Return a message indicating that the list was updated
+        message: `List with id ${req.params.id} updated.`,
+        list: list
+      }));
+  }
 
-  // Add an item to the list using the service
-  return services.addItemToList(req.user.id, req.params.id, req.body)
-    .then(item => {
-      // Return a message indicating that the item was added
-      res.status(201);
-      return {
-        message: `Item id ${item.id} was added to list ${req.params.id}!`,
+  // Delete a list by id
+  function deleteListInternal(req, res){
+
+    // Remove the list using the service
+    return shoppingListsServices.removeList(req.user.id, req.params.id)
+      .then(deletedList => ({
+        // Return a message indicating that the list was deleted
+        message: `List with id ${req.params.id} deleted.`,
+        list: deletedList
+      }));
+  }
+
+  // ---- Items in a list ----
+
+  // Add an item to a list
+  function addItemInternal(req, res){
+
+    // Add an item to the list using the service
+    return shoppingListsServices.addItemToList(req.user.id, req.params.id, req.body)
+      .then(item => {
+        // Return a message indicating that the item was added
+        res.status(201);
+        return {
+          message: `Item id ${item.id} was added to list ${req.params.id}!`,
+          item: item
+        };
+      });
+  }
+
+  // Partially update an item of a list
+  function updateItemInternal(req, res){
+
+    // Update the item in the list using the service
+    return shoppingListsServices.updateItemFromList(req.user.id, req.params.id, req.params.itemId, req.body)
+      .then(item => ({
+        // Return a message indicating that the item was updated
+        message: `Item with id ${item.id} updated.`,
         item: item
-      };
-    });
-}
+      }));
+  }
 
-// Partially update an item of a list
-function updateItemInternal(req, res){
+  // Delete an item from a list
+  function deleteItemInternal(req, res){
 
-  // Update the item in the list using the service
-  return services.updateItemFromList(req.user.id, req.params.id, req.params.itemId, req.body)
-    .then(item => ({
-      // Return a message indicating that the item was updated
-      message: `Item with id ${item.id} updated.`,
-      item: item
-    }));
-}
+    // Remove the item from the list using the service
+    return shoppingListsServices.removeItemFromList(req.user.id, req.params.id, req.params.itemId)
+      .then(deletedItem => ({
+        // Return a message indicating that the item was deleted
+        message: `Item with id ${deletedItem.id} deleted.`,
+        item: deletedItem
+      }));
+  }
 
-// Delete an item from a list
-function deleteItemInternal(req, res){
-
-  // Remove the item from the list using the service
-  return services.removeItemFromList(req.user.id, req.params.id, req.params.itemId)
-    .then(deletedItem => ({
-      // Return a message indicating that the item was deleted
-      message: `Item with id ${deletedItem.id} deleted.`,
-      item: deletedItem
-    }));
 }
