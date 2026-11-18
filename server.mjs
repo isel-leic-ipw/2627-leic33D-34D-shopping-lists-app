@@ -8,6 +8,7 @@ import createUsersServices from './services/users-services.mjs';
 import shoppingListsData from './data/memory/shopping-lists-data-mem.mjs';
 import usersData from './data/memory/users-data-mem.mjs';
 import { notFoundHandler, errorHandler } from './web/error-middleware.mjs';
+import cors from 'cors';
 
 // Create the services and APIs for shopping lists and users
 let usersServices;
@@ -42,6 +43,9 @@ const app = express(); // Express function returns an app
 
 // Serve the OpenAPI specification and Swagger UI for API documentation
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+
+// Enable CORS for all API routes to allow cross-origin requests from any origin for a public API
+app.use('/api', cors());
 
 // Register API routes: users first (registration doesn't require authentication), then shopping lists
 app.use('/api', usersApi);
