@@ -7,6 +7,7 @@ import createShoppingListsServices from './services/shopping-lists-services.mjs'
 import createUsersServices from './services/users-services.mjs';
 import shoppingListsData from './data/memory/shopping-lists-data-mem.mjs';
 import usersData from './data/memory/users-data-mem.mjs';
+import { notFoundHandler, errorHandler } from './web/error-middleware.mjs';
 
 // Create the services and APIs for shopping lists and users
 let usersServices;
@@ -28,7 +29,6 @@ try {
 // This is a version of Shopping Lists Web Application.
 // - Lists and users are in memory (in data);
 //    - Without persistent storage (no database);
-// - Without centralised server error handling.
 // - No integration tests;
 // - No end-to-end tests (only manual tests with browser and Rest Client);
 
@@ -43,38 +43,17 @@ const app = express(); // Express function returns an app
 // Serve the OpenAPI specification and Swagger UI for API documentation
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
-// Middleware to parse JSON request bodies
-app.use(express.json());
+// Register API routes: users first (registration doesn't require authentication), then shopping lists
+app.use('/api', usersApi);
+app.use('/api', shoppingListsApi);
 
-// This route is for creating a new user (registration)
-// There is no authentication required for this route, as it is for new users to register
-app.post('/api/users', usersApi.createUser);
+// Handle non-existent routes (404 Not Found)
+// After all routes have been registered, this middleware will catch any requests to 
+// unknown routes and pass a 404 error to the error handler.
+app.use(notFoundHandler);
 
-// Routes:
-
-// GET /api/lists - Get all shopping lists
-app.get('/api/lists', shoppingListsApi.getLists);
-
-// GET /api/lists/:id - Get a specific shopping list by ID
-app.get('/api/lists/:id', shoppingListsApi.getList);
-
-// POST /api/lists - Create a new shopping list
-app.post('/api/lists', shoppingListsApi.createList);
-
-// PUT /api/lists/:id - Update an existing shopping list by ID
-app.put('/api/lists/:id', shoppingListsApi.updateList);
-
-// DELETE /api/lists/:id - Delete a shopping list by ID
-app.delete('/api/lists/:id', shoppingListsApi.deleteList);
-
-// POST /api/lists/:id/items - Add an item to a specific shopping list
-app.post('/api/lists/:id/items', shoppingListsApi.addItem);
-
-// PATCH /api/lists/:id/items/:itemId - Partial update an item in a specific shopping list
-app.patch('/api/lists/:id/items/:itemId', shoppingListsApi.updateItem);
-
-// DELETE /api/lists/:id/items/:itemId - Delete an item from a specific shopping list
-app.delete('/api/lists/:id/items/:itemId', shoppingListsApi.deleteItem);
+// Centralized error handling middleware
+app.use(errorHandler);
 
 // App listening...
 app.listen(PORT, () => {

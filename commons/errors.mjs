@@ -5,7 +5,8 @@ export const ERROR_CODES = {
     ITEM_NOT_FOUND_CODE: 4,
     INVALID_API_TOKEN_CODE: 5,
     AUTHENTICATION_REQUIRED_CODE: 6,
-    USER_ALREADY_EXISTS_CODE: 7
+    USER_ALREADY_EXISTS_CODE: 7,
+    ROUTE_NOT_FOUND_CODE: 8
 };
 
 export function InternalError(code, message, description) {
@@ -49,5 +50,10 @@ export default {
         ERROR_CODES.USER_ALREADY_EXISTS_CODE,
         `User ${username} already exists`,
         'A user with the specified username already exists in the system.'
+    ),
+    ROUTE_NOT_FOUND: (method, url) => new InternalError(
+        ERROR_CODES.ROUTE_NOT_FOUND_CODE,
+        'Route not found',
+        url ? `Cannot ${method} ${url}` : 'The requested route was not found.'
     )
 };

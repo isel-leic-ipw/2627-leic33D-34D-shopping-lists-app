@@ -189,3 +189,38 @@ Host: localhost:8000
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
+### Create a shopping list with JSON error (using '=' instead of ':' in JSON)
+POST /api/lists HTTP/1.1
+Host: localhost:8000
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}} 
+
+{
+  "name"= "New Shopping List"
+}
+
+### Create an item with JSON error (missing comma between fields)
+POST /api/lists/2/items HTTP/1.1
+Host: localhost:8000
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{ "name": "Pasta"
+  "quantity": 1,
+  "bought": false
+}
+
+### Get a non-existent route (should return 404 Not Found) 
+GET /api/unknown HTTP/1.1
+Host: localhost:8000
+Authorization: Bearer {{TOKEN}}
+
+### Using an invalid HTTP method (PATCH) on a route that doesn't support it (GET)
+PATCH /api/lists HTTP/1.1
+Host: localhost:8000
+Authorization: Bearer {{TOKEN}}
+
+### Using an invalid HTTP method (DELETE) on a route that doesn't support it (POST)
+DELETE /api/lists HTTP/1.1
+Host: localhost:8000
+Authorization: Bearer {{TOKEN}}

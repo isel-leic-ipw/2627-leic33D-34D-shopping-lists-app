@@ -1,3 +1,4 @@
+import express from 'express';
 import wrapperHandler from './helpers.mjs';
 
 export default function createUsersApi(usersServices) {
@@ -6,11 +7,12 @@ export default function createUsersApi(usersServices) {
     throw new Error('The usersServices module is required in Users API');
   }
 
-  // Operations on users using the wrapperHandler function.
-  // Each internal handler returns a Promise: resolved with the response body or rejected with an InternalError.
-  return {
-    createUser: wrapperHandler(createUserInternal)
-  };
+  const router = express.Router();
+
+  router.use(express.json());
+  router.post('/users', wrapperHandler(createUserInternal));
+
+  return router;
 
   // Create a new user
   function createUserInternal(req, res) {

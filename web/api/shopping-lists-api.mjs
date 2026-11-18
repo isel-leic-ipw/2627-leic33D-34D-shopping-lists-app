@@ -1,3 +1,4 @@
+import express from 'express';
 import wrapperHandler from './helpers.mjs';
 import createBearerAuthMiddleware from '../auth-middleware.mjs';
 
@@ -11,23 +12,25 @@ export default function createShoppingListsApi(shoppingListsServices, usersServi
     throw new Error('The Users services module is required in Shopping Lists API');
   }
 
-  const bearerAuth = createBearerAuthMiddleware(usersServices);
+  const router = express.Router();
 
-  // Operations on shopping lists and items in a list using the wrapperHandler function.
-  // Each internal handler returns a Promise: resolved with the response body or rejected with an InternalError.
-  return {
-    // Express accepts an array of middleware functions for each route.
-    // For instance, the getLists route will be, in the server, like this:
-    // app.get('/lists', authMiddleware, wrapperHandler(getListsInternal));
-    getLists: [bearerAuth, wrapperHandler(getListsInternal)],
-    getList: [bearerAuth, wrapperHandler(getListInternal)],
-    createList: [bearerAuth, wrapperHandler(createListInternal)],
-    updateList: [bearerAuth, wrapperHandler(updateListInternal)],
-    deleteList: [bearerAuth, wrapperHandler(deleteListInternal)],
-    addItem: [bearerAuth, wrapperHandler(addItemInternal)],
-    updateItem: [bearerAuth, wrapperHandler(updateItemInternal)],
-    deleteItem: [bearerAuth, wrapperHandler(deleteItemInternal)]
-  };
+  // Middleware to parse JSON request bodies and handle authentication
+  router.use(express.json());
+
+  // Middleware to handle authentication using Bearer tokens
+  router.use(createBearerAuthMiddleware(usersServices));
+
+  // Define the routes for the shopping lists API
+  router.get('/lists', wrapperHandler(getListsInternal));
+  router.get('/lists/:id', wrapperHandler(getListInternal));
+  router.post('/lists', wrapperHandler(createListInternal));
+  router.put('/lists/:id', wrapperHandler(updateListInternal));
+  router.delete('/lists/:id', wrapperHandler(deleteListInternal));
+  router.post('/lists/:id/items', wrapperHandler(addItemInternal));
+  router.patch('/lists/:id/items/:itemId', wrapperHandler(updateItemInternal));
+  router.delete('/lists/:id/items/:itemId', wrapperHandler(deleteItemInternal));
+
+  return router;
 
   // Get all lists
   function getListsInternal(req, res){
