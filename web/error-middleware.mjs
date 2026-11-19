@@ -1,5 +1,12 @@
 import Errors from '../commons/errors.mjs';
-import { sendHttpError } from './api/helpers.mjs';
+import mapToHttpError from './map-to-http-errors.mjs';
+
+// Sends the mapped HTTP error response
+export function sendHttpError(res, error) {
+    const httpError = mapToHttpError(error);
+    res.status(httpError.status);
+    res.json(httpError.error);
+}
 
 // Middleware to handle non-existent routes (Not Found)
 export function notFoundHandler(req, res, next) {
@@ -16,4 +23,5 @@ export function errorHandler(err, req, res, next) {
     }
     sendHttpError(res, err);
 }
+
 

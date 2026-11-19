@@ -1,6 +1,4 @@
 import ERRORS from '../commons/errors.mjs';
-import { sendHttpError } from './api/helpers.mjs';
-
 
 // Authenticates the request using the "Authorization: Bearer <token>" header
 export default function createBearerAuthMiddleware(userServices) {
@@ -16,8 +14,7 @@ export default function createBearerAuthMiddleware(userServices) {
         const [scheme, token] = authorization?.trim().split(' ') ?? [];
 
         if (scheme !== 'Bearer' || !token) {
-            sendHttpError(res, ERRORS.AUTHENTICATION_REQUIRED('Token is required.'));
-            return;
+            return next(ERRORS.AUTHENTICATION_REQUIRED('Token is required.'));
         }
 
         return userServices.getUserByToken(token)
@@ -27,7 +24,7 @@ export default function createBearerAuthMiddleware(userServices) {
                 next();
             })
             .catch(error => {
-                sendHttpError(res, error);
+                next(error);
             });
     }
 }

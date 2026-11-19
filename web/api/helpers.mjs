@@ -1,11 +1,3 @@
-import mapToHttpError from '../map-to-http-errors.mjs';
-
-export function sendHttpError(res, error){
-    const httpError = mapToHttpError(error);
-    res.status(httpError.status);
-    res.json(httpError.error);
-}
-
 // A higher-order function that wraps a request handler to handle errors and send appropriate HTTP responses.
 // The handler returns a Promise: resolved with the result or rejected with an InternalError.
 export default function wrapperHandler(handler){
