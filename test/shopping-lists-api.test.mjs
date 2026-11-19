@@ -3,17 +3,27 @@ import createShoppingListsApi from '../web/api/shopping-lists-api.mjs';
 import createShoppingListsServicesMock from './mocks/shopping-lists-services-mock.mjs';
 import createUsersServicesMock, { USER, VALID_TOKEN } from './mocks/users-services-mock.mjs';
 
+import { errorHandler } from '../web/error-middleware.mjs';
+
 // With the Router, shoppingListsApi is an Express Router (a middleware function)
 // containing the middleware pipeline (JSON body parser, auth) and registered routes.
-// Runs the router with a fake Express response and resolves with it when json() or next() is called.
+// Runs the router with a fake Express response; if next(err) is called with an error,
+// delegates to the errorHandler middleware.
 function run(handler, req) {
   return new Promise(resolve => {
     const res = {
       statusCode: 200,
+      headersSent: false,
       status(code) { this.statusCode = code; return this; },
       json(body) { this.body = body; resolve(this); }
     };
-    const next = () => resolve(res);
+    const next = (err) => {
+      if (err) {
+        errorHandler(err, req, res, () => resolve(res));
+      } else {
+        resolve(res);
+      }
+    };
     handler(req, res, next);
   });
 }

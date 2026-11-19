@@ -9,7 +9,7 @@ export function sendHttpError(res, error){
 // A higher-order function that wraps a request handler to handle errors and send appropriate HTTP responses.
 // The handler returns a Promise: resolved with the result or rejected with an InternalError.
 export default function wrapperHandler(handler){
-  return function (req, res){
+  return function (req, res, next){
     // Call the handler function in a centralized way to avoid code repetition in all handlers.
     handler(req, res)
       .then(result => {
@@ -17,8 +17,8 @@ export default function wrapperHandler(handler){
         res.json(result);
       })
       .catch(error => {
-        // Send the appropriate HTTP status and message
-        sendHttpError(res, error);
+        // Call the next middleware with the error to be handled by the centralized error handler
+        next(error);
       });
   };
 }
